@@ -1,0 +1,3 @@
+"0","# Use -1 to remove that NA last row"
+"0","values <- year_2018[8:nrow(year_2018)-1, 3:ncol(year_2018)]"
+"0","values"

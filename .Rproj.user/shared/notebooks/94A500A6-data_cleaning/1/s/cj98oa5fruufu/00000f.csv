@@ -1,0 +1,1 @@
+"0","barrio_col <- unlist(lapply(barrios, function(x) rep(x, nrow(cols))))"

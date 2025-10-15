@@ -1,0 +1,6 @@
+"0","cols <- data.frame("
+"0","  ""ciclo_educativo"" = unlist(lapply(ciclo_educativo, function(x) rep(x, length(categoria)))),"
+"0","  ""cat"" = rep(categoria, length(ciclo_educativo))"
+"0",")"
+"0",""
+"0","cols"

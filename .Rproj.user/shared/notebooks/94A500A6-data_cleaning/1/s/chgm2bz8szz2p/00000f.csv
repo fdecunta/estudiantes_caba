@@ -1,0 +1,7 @@
+"0","full_columns <-data.frame("
+"0","  ""barrio"" = barrio_col,"
+"0","  ""ciclo_educativo"" = unlist(rep(cols$ciclo_educativo, length(barrios))),"
+"0","  ""cat"" = unlist(rep(cols$cat, length(barrios))),"
+"0","  ""values"" = as.vector(t(values)),"
+"0","  ""year"" = 2018"
+"0",")"

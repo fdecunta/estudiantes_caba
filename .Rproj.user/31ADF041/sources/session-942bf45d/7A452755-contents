@@ -1,0 +1,196 @@
+---
+title: "matricula caba"
+author: "fd"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(readxl)
+```
+
+```{r}
+year_2018 <- read_excel("../Matricula.xlsx", sheet = "2018")
+year_2019 <- read_excel("../Matricula.xlsx", sheet = "2019")
+year_2020 <- read_excel("../Matricula.xlsx", sheet = "2020")
+year_2021 <- read_excel("../Matricula.xlsx", sheet = "2021")
+year_2022 <- read_excel("../Matricula.xlsx", sheet = "2022")
+year_2023 <- read_excel("../Matricula.xlsx", sheet = "2023")
+year_2024 <- read_excel("../Matricula.xlsx", sheet = "2024")
+```
+
+```{r}
+ciclo_educativo <- unlist(year_2018[4, ], use.names = FALSE) %>% 
+  .[!is.na(.)] %>% 
+  unique()
+
+ciclo_educativo
+```
+
+```{r}
+categoria <- year_2018[5, ] |>
+  unlist(use.names = FALSE) |>
+  as.character() |>
+  na.omit() |>
+  unique() |>
+  tolower() |>
+  str_replace_all(" ", "_") |>
+  str_replace_all("%", "perc")
+
+categoria
+```
+
+```{r}
+ciclo_educativo <- year_2018[4, ] |>
+  unlist(use.names = FALSE) |>
+  as.character() |>
+  na.omit() |>
+  unique() |>
+  tolower() |>
+  str_replace_all(" ", "_") |>
+  str_replace_all("%", "perc")
+
+ciclo_educativo
+```
+
+```{r}
+cols <- data.frame(
+  "ciclo_educativo" = unlist(lapply(ciclo_educativo, function(x) rep(x, length(categoria)))),
+  "cat" = rep(categoria, length(ciclo_educativo))
+)
+
+cols
+```
+
+```{r}
+barrios <- unlist(year_2018[, 2], use.names = FALSE) %>% 
+  .[!is.na(.)] %>% 
+  unique() 
+
+barrios <- barrios[-1]
+barrios
+```
+
+```{r}
+barrio_col <- unlist(lapply(barrios, function(x) rep(x, nrow(cols))))
+```
+
+
+```{r}
+# Use -1 to remove that NA last row
+values <- year_2018[8:nrow(year_2018)-1, 3:ncol(year_2018)]
+values
+```
+
+```{r}
+full_columns <-data.frame(
+  "barrio" = barrio_col,
+  "ciclo_educativo" = unlist(rep(cols$ciclo_educativo, length(barrios))),
+  "cat" = unlist(rep(cols$cat, length(barrios))),
+  "values" = as.vector(t(values)),
+  "year" = 2018
+)
+```
+
+
+```{r}
+# Transform to numeric
+full_columns$values <- as.numeric(str_replace_all(full_columns$values, "-", "NA"))
+```
+
+That's cool. Now write it as a function:
+
+```{r}
+extract_categories <- function(df) {
+   categoria <- df[5, ] |>
+    unlist(use.names = FALSE) |>
+    as.character() |>
+    na.omit() |>
+    unique() |>
+    tolower() |>
+    str_replace_all(" ", "_") |>
+    str_replace_all("%", "perc") 
+   
+   return(categoria)
+}
+
+
+extract_ciclo_educativo <- function(df) {
+  ciclo_educativo <- df[4, ] |>
+    unlist(use.names = FALSE) |>
+    as.character() |>
+    na.omit() |>
+    unique() |>
+    tolower() |>
+    str_replace_all(" ", "_") |>
+    str_replace_all("%", "perc")
+  
+  return(ciclo_educativo)
+}
+
+
+extract_barrios <- function(df) {
+  barrios <- unlist(df[, 2], use.names = FALSE) %>% 
+    .[!is.na(.)] %>% 
+    unique() 
+  
+  barrios <- barrios[-1]
+  
+  return(barrios)
+}
+
+
+extract_values <- function(df) {
+  values <- df[8:nrow(df)-1, 3:ncol(df)]
+  values <- as.numeric(unlist(as.vector(values)))
+  
+  return(values)
+}
+```
+
+
+```{r}
+read_and_clean <- function(df, year) {
+  categories <- extract_categories(df)
+  ciclo_educativo <- extract_ciclo_educativo(df)
+  barrios <- extract_barrios(df)
+  values <- extract_values(df)
+  
+  new_df <- expand.grid(
+    barrio = barrios,
+    ciclo_educativo = ciclo_educativo,
+    categoria = categories
+  )
+  
+  new_df$year <- year
+  new_df$values <- values
+
+  return(new_df)
+}
+```
+
+
+
+```{r}
+data_alumnos <- rbind(
+  read_and_clean(year_2018, 2018),
+  read_and_clean(year_2019, 2019),
+  read_and_clean(year_2020, 2020),
+  read_and_clean(year_2021, 2021),
+  read_and_clean(year_2022, 2022),
+  read_and_clean(year_2023, 2023),
+  read_and_clean(year_2024, 2024)
+)
+```
+
+```{r}
+head(data_alumnos)
+```
+
+
+
+```{r}
+dim(data_alumnos)
+```
+
