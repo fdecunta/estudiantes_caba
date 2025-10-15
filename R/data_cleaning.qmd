@@ -5,10 +5,22 @@ format: html
 editor: visual
 ---
 
+Data from:
+
+https://buenosaires.gob.ar/anuario-estadistico/el-sistema-educativo-de-la-ciudad-autonoma-de-buenos-aires
+
 ```{r}
 library(tidyverse)
 library(readxl)
 ```
+
+```{r}
+URL <- "https://buenosaires.gob.ar/sites/default/files/2025-01/AEECBA-01.04-UnidadesEducativas%25EstatalModalidadComunaBarrio.xlsx"
+output <- "../Matricula.xlsx"
+
+download.file(URL, output)
+```
+
 
 ```{r}
 year_2018 <- read_excel("../Matricula.xlsx", sheet = "2018")
@@ -189,8 +201,7 @@ head(data_alumnos)
 ```
 
 
-
 ```{r}
-dim(data_alumnos)
+write_csv(data_alumnos, file = "../data/matricula_caba.csv")
 ```
 

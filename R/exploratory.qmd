@@ -1,0 +1,77 @@
+---
+title: "exp"
+author: "fd"
+format: html
+editor: visual
+---
+
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+matriculas <- read_csv("../data/matricula_caba.csv")
+
+matriculas$year <- as.factor(matriculas$year)
+```
+
+
+```{r}
+matriculas %>% 
+  filter(ciclo_educativo == "inicial_común", categoria == "matrícula", !is.na(values)) %>% 
+  group_by(year) %>% 
+  summarise(total = sum(values))
+```
+
+
+
+```{r}
+matriculas %>% 
+  filter(ciclo_educativo == "inicial_común", categoria == "matrícula", !is.na(values)) %>% 
+  group_by(year) %>% 
+  summarise(total = sum(values)) %>% 
+  ggplot(aes(x = year, y = total)) +
+  geom_col(fill = "royalblue") +
+  theme_bw() + 
+  labs(
+    title = "Alumnos matriculados en Ciclo Inicial",
+    x = "Año",
+    y = "Matriculados",
+    caption = "Datos oficiales del Sistema Educativo de la Ciudad Autónoma de Buenos Aires") +
+  scale_y_continuous(
+    expand = c(0, 0),
+    limits = c(0, 175000)
+  ) + 
+  geom_text(
+    aes(x = year,
+        y = total,
+        label = total),
+    vjust = -1
+  )
+```
+
+
+
+```{r}
+matriculas %>% 
+  filter(ciclo_educativo == "primario_común", categoria == "matrícula", !is.na(values)) %>%
+  group_by(year) %>% 
+  summarise(total = sum(values)) %>% 
+  ggplot(aes(x = year, y = total)) +
+  geom_col()
+```
+
+
+```{r}
+matriculas %>% 
+  filter(ciclo_educativo == "secundario_común", categoria == "matrícula", !is.na(values)) %>%
+  group_by(year) %>% 
+  summarise(total = sum(values)) %>% 
+  ggplot(aes(x = year, y = total)) +
+  geom_col()
+```
+
+
+
